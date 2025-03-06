@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitthugram - MCQ Aiken Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .header {
+            background-color: #d50000;
+            padding: 15px;
+        }
+        .header img {
+            height: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        #mcq-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .question-block {
+            background: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        input[type="text"] {
+            width: 90%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="logo.png" alt="Pitthugram Logo">
+    </div>
+    <h1>Create Your Ultimate Question Bank with Pitthugram</h1>
+    <div id="mcq-container">
+        <button onclick="addQuestion()">Add Question</button>
+        <button onclick="exportToAiken()">Export to Aiken</button>
+        <div id="questions"></div>
+    </div>
+    
+    <script>
+        function addQuestion() {
+            const container = document.getElementById("questions");
+            const questionDiv = document.createElement("div");
+            questionDiv.classList.add("question-block");
+            
+            const questionInput = document.createElement("input");
+            questionInput.type = "text";
+            questionInput.placeholder = "Enter your question";
+            questionDiv.appendChild(questionInput);
+            
+            const options = ["A", "B", "C", "D"];
+            options.forEach(option => {
+                const optionContainer = document.createElement("div");
+                const radio = document.createElement("input");
+                radio.type = "radio";
+                radio.name = `answer-${container.children.length}`;
+                radio.value = option;
+                
+                const label = document.createElement("label");
+                label.innerText = `${option}. `;
+                
+                const optionInput = document.createElement("input");
+                optionInput.type = "text";
+                optionInput.placeholder = `Option ${option}`;
+                
+                optionContainer.appendChild(radio);
+                optionContainer.appendChild(label);
+                optionContainer.appendChild(optionInput);
+                questionDiv.appendChild(optionContainer);
+            });
+            
+            container.appendChild(questionDiv);
+        }
+        
+        function exportToAiken() {
+            let output = "";
+            document.querySelectorAll(".question-block").forEach((block, index) => {
+                const question = block.querySelector("input[type=text]").value;
+                output += question + "\n";
+                
+                const options = block.querySelectorAll("input[type=text]:not(:first-child)");
+                options.forEach((opt, i) => {
+                    output += `${String.fromCharCode(65 + i)}. ${opt.value}\n`;
+                });
+                
+                const answer = block.querySelector("input[type=radio]:checked");
+                if (answer) {
+                    output += `ANSWER: ${answer.value}\n\n`;
+                }
+            });
+            
+            const blob = new Blob([output], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "mcq_aiken.txt";
+            a.click();
+        }
+    </script>
+</body>
+</html>
